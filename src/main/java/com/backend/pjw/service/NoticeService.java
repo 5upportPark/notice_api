@@ -1,15 +1,19 @@
 package com.backend.pjw.service;
 
+import com.backend.pjw.entity.File;
 import com.backend.pjw.entity.Notice;
 import com.backend.pjw.repository.FileRepositoryImpl;
 import com.backend.pjw.repository.NoticeRepositoryImpl;
 import com.backend.pjw.request.NoticeRequest;
+import com.backend.pjw.util.FileUtil;
 import com.backend.pjw.view.NoticeView;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,12 +38,19 @@ public class NoticeService {
     public void addNotice(NoticeRequest req){
         Notice notice = Notice.fromNew(req.getTitle(), req.getContent(), req.getStartAt(), req.getEndAt(), req.getCreatedBy());
         noticeRepositoryImpl.save(notice);
+        List<File> fileList = newFileUpload(notice.getId(), req.getFiles());
+        fileRepositoryImpl.saveAll(fileList);
     }
 
     @Transactional
     public void editNotice(NoticeRequest req){
         Optional<Notice> optNotice = noticeRepositoryImpl.findById(req.getId());
         if(optNotice.isEmpty()) return;
+
+        fileRepositoryImpl.deleteAllByParentId(req.getId());
+
+        List<File> fileList = newFileUpload(req.getId(), req.getFiles());
+        fileRepositoryImpl.saveAll(fileList);
 
         Notice notice = optNotice.get();
         notice.update(req.getTitle(), req.getContent(), req.getStartAt(), req.getEndAt(), req.getCreatedBy());
@@ -48,6 +59,17 @@ public class NoticeService {
 
     @Transactional
     public void deleteNotice(Long id){
+        fileRepositoryImpl.deleteAllByParentId(id);
         noticeRepositoryImpl.deleteById(id);
+    }
+
+    private List<File> newFileUpload(Long noticeId, List<MultipartFile> files){
+        List<File> fileList = new ArrayList<>();
+        for(MultipartFile file : files) {
+            String path = FileUtil.uploadFile(file);
+            File fileEntity = File.newOne(noticeId, file.getOriginalFilename(), file.getName(), path);
+            fileList.add(fileEntity);
+        }
+        return fileList;
     }
 }
