@@ -35,17 +35,19 @@ public class NoticeService {
     }
 
     @Transactional
-    public void addNotice(NoticeRequest req){
+    public NoticeView addNotice(NoticeRequest req){
         Notice notice = Notice.fromNew(req.getTitle(), req.getContent(), req.getStartAt(), req.getEndAt(), req.getCreatedBy());
         noticeRepositoryImpl.save(notice);
         List<File> fileList = newFileUpload(notice.getId(), req.getFiles());
         fileRepositoryImpl.saveAll(fileList);
+
+        return NoticeView.fromEntity(notice);
     }
 
     @Transactional
-    public void editNotice(NoticeRequest req){
+    public NoticeView editNotice(NoticeRequest req){
         Optional<Notice> optNotice = noticeRepositoryImpl.findById(req.getId());
-        if(optNotice.isEmpty()) return;
+        if(optNotice.isEmpty()) return null;
 
         fileRepositoryImpl.deleteAllByParentId(req.getId());
 
@@ -55,6 +57,8 @@ public class NoticeService {
         Notice notice = optNotice.get();
         notice.update(req.getTitle(), req.getContent(), req.getStartAt(), req.getEndAt(), req.getCreatedBy());
         noticeRepositoryImpl.save(notice);
+
+        return NoticeView.fromEntity(notice);
     }
 
     @Transactional
