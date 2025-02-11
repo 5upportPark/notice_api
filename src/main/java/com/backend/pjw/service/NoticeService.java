@@ -2,6 +2,7 @@ package com.backend.pjw.service;
 
 import com.backend.pjw.entity.File;
 import com.backend.pjw.entity.Notice;
+import com.backend.pjw.entity.NoticeProjection;
 import com.backend.pjw.repository.FileRepositoryImpl;
 import com.backend.pjw.repository.NoticeRepositoryImpl;
 import com.backend.pjw.request.NoticeRequest;
@@ -30,8 +31,8 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public List<NoticeView> getNoticeList(int page, int pageSize){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<Notice> notices = noticeRepositoryImpl.findAllByOrderByIdDesc(pageable);
-        return notices.stream().map(NoticeView::fromEntity).toList();
+        List<NoticeProjection> notices = noticeRepositoryImpl.findAllByOrderByIdDesc(pageable);
+        return notices.stream().map(NoticeView::from).toList();
     }
 
     @Transactional

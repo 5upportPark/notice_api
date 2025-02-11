@@ -1,6 +1,7 @@
 package com.backend.pjw.view;
 
 import com.backend.pjw.entity.Notice;
+import com.backend.pjw.entity.NoticeProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,16 @@ public class NoticeView {
                 .createdAt(notice.getCreatedAt())
                 .updatedBy(notice.getUpdatedBy())
                 .updatedAt(notice.getUpdatedAt())
+                .build();
+    }
+
+    public static NoticeView from(NoticeProjection notice){
+        return NoticeView.builder()
+                .title(notice.getTitle())
+                .content(notice.getContent())
+                .viewCount(notice.getViewCount())
+                .createdBy(notice.getCreatedBy())
+                .createdAt(notice.getCreatedAt())
                 .build();
     }
 
