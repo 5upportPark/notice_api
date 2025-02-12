@@ -18,9 +18,8 @@ public class NoticeController {
     }
 
     @GetMapping
-    public List<NoticeView> getNoticeList(@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-                                          @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize){
-        return noticeService.getNoticeList(page, pageSize);
+    public List<NoticeView> getNoticeList(@RequestParam(name = "cursor", required = false, defaultValue = "0") Long cursor){
+        return noticeService.getNoticeList(cursor);
     }
 
     @PostMapping

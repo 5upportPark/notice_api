@@ -48,6 +48,7 @@ public class Notice {
         return Notice.builder()
                 .title(title)
                 .content(content)
+                .viewCount(0L)
                 .startAt(startAt)
                 .endAt(endAt)
                 .createdBy(createdBy)

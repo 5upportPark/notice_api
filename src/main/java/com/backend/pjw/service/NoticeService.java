@@ -22,6 +22,7 @@ import java.util.Optional;
 public class NoticeService {
     private final NoticeRepositoryImpl noticeRepositoryImpl;
     private final FileRepositoryImpl fileRepositoryImpl;
+    private static final int PAGE_SIZE = 10;
 
     public NoticeService(NoticeRepositoryImpl noticeRepositoryImpl, FileRepositoryImpl fileRepositoryImpl) {
         this.noticeRepositoryImpl = noticeRepositoryImpl;
@@ -29,9 +30,9 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeView> getNoticeList(int page, int pageSize){
-        Pageable pageable = PageRequest.of(page, pageSize);
-        List<NoticeProjection> notices = noticeRepositoryImpl.findAllByOrderByIdDesc(pageable);
+    public List<NoticeView> getNoticeList(Long id){
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE);
+        List<NoticeProjection> notices = noticeRepositoryImpl.findAllByIdLessThanOrderByIdDesc(id, pageable);
         return notices.stream().map(NoticeView::from).toList();
     }
 

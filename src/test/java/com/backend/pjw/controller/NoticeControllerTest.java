@@ -75,7 +75,7 @@ public class NoticeControllerTest {
     @Test
     @DisplayName("공지사항 조회 API 테스트")
     public void getNoticeList() throws Exception {
-        when(noticeService.getNoticeList(anyInt(), anyInt())).thenReturn(noticeList);
+        when(noticeService.getNoticeList(anyLong())).thenReturn(noticeList);
 
         mockMvc.perform(get("/notice?page=0&pageSize=10"))
                 .andExpect(status().isOk())

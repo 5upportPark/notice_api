@@ -1,6 +1,7 @@
 package com.backend.pjw.service;
 
 import com.backend.pjw.entity.Notice;
+import com.backend.pjw.entity.NoticeProjection;
 import com.backend.pjw.repository.FileRepositoryImpl;
 import com.backend.pjw.repository.NoticeRepositoryImpl;
 import com.backend.pjw.request.NoticeRequest;
@@ -34,7 +35,7 @@ public class NoticeServiceTest {
     @InjectMocks
     NoticeService noticeService;
 
-    private List<Notice> noticeList;
+    private List<NoticeProjection> noticeList;
     private Notice notice;
     @BeforeEach
     public void setUp(){
@@ -42,34 +43,28 @@ public class NoticeServiceTest {
 
         noticeList = new ArrayList<>();
         for(int i = 0; i < 3; i++){
-            Notice notice = Notice.builder()
-                    .id((long) i)
-                    .title("title"+i)
-                    .content("content"+i)
-                    .viewCount(0L)
-                    .createdBy("tester"+i)
-                    .createdAt(ZonedDateTime.now())
-                    .build();
+            NoticeProjection notice = new NoticeProjection("title"+i, "content"+i,
+                    0L, "tester"+i, ZonedDateTime.now());
+
             noticeList.add(notice);
         }
     }
     @Test
     @DisplayName("공지사항 조회 테스트")
     public void getNoticeList(){
-        Pageable page = PageRequest.of(0,10);
-        when(noticeRepositoryImpl.findAllByOrderByIdDesc(any(Pageable.class)))
+        when(noticeRepositoryImpl.findAllByIdLessThanOrderByIdDesc(anyLong(), any(Pageable.class)))
                 .thenReturn(noticeList);
 
-        List<NoticeView> result = noticeService.getNoticeList(0, 10);
+        List<NoticeView> result = noticeService.getNoticeList(10L);
         NoticeView noticeView = result.get(0);
-System.out.println(result.get(0).getViewCount()+", "+result.get(1).getViewCount()+", "+result.get(2).getViewCount());
+
         assertThat(result).hasSize(3);
         assertEquals(noticeView.getTitle(), "title0");
         assertEquals(noticeView.getContent(), "content0");
         assertThat(noticeView.getCreatedAt()).isNotNull();
         assertThat(noticeView.getViewCount()).isNotNegative();
         assertEquals(noticeView.getCreatedBy(), "tester0");
-        verify(noticeRepositoryImpl, times(1)).findAllByOrderByIdDesc(any(Pageable.class));
+        verify(noticeRepositoryImpl, times(1)).findAllByIdLessThanOrderByIdDesc(anyLong(), any(Pageable.class));
     }
 
     @Test

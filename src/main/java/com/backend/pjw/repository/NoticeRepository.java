@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
-    List<NoticeProjection> findAllByOrderByIdDesc(Pageable pageable);
+    List<NoticeProjection> findAllByIdLessThanOrderByIdDesc(Long id, Pageable pageable);
     Optional<Notice> findById(Long id);
     Notice save(Notice notice);
     void deleteById(Long id);
