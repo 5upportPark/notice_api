@@ -13,6 +13,10 @@ java {
 	}
 }
 
+bootJar{
+	archiveFileName="backend_pjw.jar"
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
